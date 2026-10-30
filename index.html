@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -18,7 +19,10 @@
 <header class="site">
   <div class="wrap bar">
     <a class="name" href="index.html">Alexey Terletskiy</a>
-    <nav aria-label="Main">
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="menu" aria-label="Main">
       <a href="#examples">Examples</a>
       <a href="#try">Try it</a>
       <a href="#what">What I do</a>
@@ -79,7 +83,7 @@
       </ol>
     </section>
 
-        <section class="sec" id="try">
+    <section class="sec" id="try">
       <h2>Try it</h2>
       <p class="sub">Pick a simulated dataset or paste your own numbers, then switch between chart types. Everything is calculated in your browser, nothing is uploaded.</p>
       <div class="dash" id="dash">
@@ -187,6 +191,20 @@
 </dialog>
 
 <script>
+/* Burger menu */
+(function () {
+  const btn = document.getElementById('burger');
+  const menu = document.getElementById('menu');
+  function set(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('open', open);
+  }
+  btn.addEventListener('click', function () { set(btn.getAttribute('aria-expanded') !== 'true'); });
+  menu.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
+  window.matchMedia('(min-width: 48.01rem)').addEventListener('change', function (e) { if (e.matches) set(false); });
+})();
+
 /* Dashboard viewer: the list items are normal links, so they work without JavaScript. */
 (function () {
   const dlg = document.getElementById('viewer');
@@ -206,13 +224,14 @@
   dlg.addEventListener('close', function () { frame.src = 'about:blank'; });
 })();
 
-/* Cover: 90 simulated trajectories, one orange line for their mean */
+/* Cover: 90 simulated trajectories, one orange line for their mean (fewer on phones) */
 (function () {
   const cv = document.getElementById('fibers');
   if (!cv) return;
   const ctx = cv.getContext('2d');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const N = 90, STEPS = 120;
+  const small = window.matchMedia('(max-width: 40rem)').matches;
+  const N = small ? 45 : 90, STEPS = small ? 60 : 120;
   let w = 0, h = 0, t = 0, mx = 0.5, visible = true;
 
   let s = 11;
@@ -273,12 +292,6 @@
   if (!reduce) requestAnimationFrame(loop);
 })();
 
-
-
-
-
-
-/* Outlier demo */
 /* Try it: mini dashboard */
 (function () {
   const $ = function (id) { return document.getElementById(id); };
@@ -365,7 +378,7 @@
       o += '<line class="gl" x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '"/>' +
            '<text class="tt" x="' + (M.l - 6) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">' + f(v) + '</text>';
     }
-    return o + (unit ? '<text class="tt" x="' + M.l + '" y="10">' + unit + '</text>' : '');
+    return o + (unit ? '<text class="tt" x="' + M.l + '" y="13">' + unit + '</text>' : '');
   }
   function xCaption(label) {
     return '<text class="tt" x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + label + '</text>';
