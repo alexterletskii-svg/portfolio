@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alexey Terletskiy, data analysis and dashboards</title>
+<meta name="description" content="Independent data analyst. Data cleaning, documented analysis in Python, dashboards, and custom software for research.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap bar">
+    <a class="name" href="index.html">Alexey Terletskiy</a>
+    <nav aria-label="Main">
+      <a href="#examples">Examples</a>
+      <a href="#try">Try it</a>
+      <a href="#what">What I do</a>
+      <a href="#process">Process</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="cover">
+    <canvas id="fibers" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <div class="teasers">
+        <a href="#what"><b>Cleaning</b><span>Every rule written down</span></a>
+        <a href="#examples"><b>Dashboards</b><span>Open in any browser</span></a>
+        <a href="#what"><b>Software</b><span>Built around your study</span></a>
+      </div>
+      <div class="cover-body">
+        <p class="kicker">Taking on new projects</p>
+        <h1>I analyze research data and build the dashboards, figures and software around it.</h1>
+        <p class="lede">I clean messy exports, run documented analyses in Python, and deliver results your collaborators can open in a browser or drop into a paper. If a study needs its own program, we can discuss that too.</p>
+        <div class="actions">
+          <a class="btn primary" href="#examples">See examples</a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <p class="fig"><strong>Cover.</strong> 90 simulated signals. Each thin line is one participant, the orange line is their mean.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="sec" id="examples">
+      <h2>Examples</h2>
+      <p class="sub">Four worked examples on simulated data. Open one to explore the dashboard. Each comes with the Python code that produced it.</p>
+      <ol class="toc">
+        <li><a href="dashboards/dashboard_stress.html" data-title="Stress response in wearable data" data-code="scripts/gen_stress.py">
+          <span class="no">01</span>
+          <span><span class="ttl">Stress response in wearable data</span>
+            <span class="dsc">Repeated measures in three states: cleaning rules, distributions, one line per participant and a confidence interval.</span></span>
+          <span class="how">Open dashboard</span></a></li>
+        <li><a href="dashboards/dashboard_air-quality.html" data-title="Air quality: gaps, sensor faults and an episode" data-code="scripts/gen_air_quality.py">
+          <span class="no">02</span>
+          <span><span class="ttl">Air quality: gaps, sensor faults and an episode</span>
+            <span class="dsc">Three stations, hourly readings. Detects spikes and a stuck sensor, finds a network-wide episode, compares stations and weekday rhythms.</span></span>
+          <span class="how">Open dashboard</span></a></li>
+        <li><a href="dashboards/dashboard_reaction-time.html" data-title="Reaction time in two groups" data-code="scripts/gen_reaction_time.py">
+          <span class="no">03</span>
+          <span><span class="ttl">Reaction time in two groups</span>
+            <span class="dsc">Comparing groups without overstating the evidence: bootstrap interval, permutation test, effect size, change within the session.</span></span>
+          <span class="how">Open dashboard</span></a></li>
+        <li><a href="dashboards/dashboard_survey.html" data-title="Survey data: careless answers, reverse scoring, reliability" data-code="scripts/gen_survey.py">
+          <span class="no">04</span>
+          <span><span class="ttl">Survey data: careless answers, reverse scoring, reliability</span>
+            <span class="dsc">A questionnaire with negatively worded items. Removes straight-lining, reverse-scores, checks reliability with Cronbach's alpha and compares two groups.</span></span>
+          <span class="how">Open dashboard</span></a></li>
+      </ol>
+    </section>
+
+        <section class="sec" id="try">
+      <h2>Try it</h2>
+      <p class="sub">Pick a simulated dataset or paste your own numbers, then switch between chart types. Everything is calculated in your browser, nothing is uploaded.</p>
+      <div class="dash" id="dash">
+        <div class="dtabs" role="group" aria-label="Chart type">
+          <button type="button" data-chart="line" aria-pressed="true">Line</button>
+          <button type="button" data-chart="bars" aria-pressed="false">Bars</button>
+          <button type="button" data-chart="hist" aria-pressed="false">Histogram</button>
+          <button type="button" data-chart="scatter" aria-pressed="false">Scatter</button>
+          <button type="button" data-chart="share" aria-pressed="false">Share</button>
+        </div>
+
+        <div class="dmain">
+          <div class="kpis">
+            <div class="kpi"><b id="k-n">–</b><span>Readings</span></div>
+            <div class="kpi"><b id="k-mean">–</b><span>Mean</span></div>
+            <div class="kpi"><b id="k-med">–</b><span>Median</span></div>
+            <div class="kpi"><b id="k-bad">–</b><span>Flagged</span></div>
+          </div>
+          <p class="dtitle" id="dtitle"></p>
+          <svg id="chart" viewBox="0 0 640 300" role="img" aria-label="Chart of the selected data"></svg>
+          <p class="dnote" id="dnote"></p>
+        </div>
+
+        <div class="dside">
+          <label for="ds">Dataset</label>
+          <select id="ds">
+            <option value="hr">Heart rate, bpm</option>
+            <option value="pm">PM2.5, µg/m³</option>
+            <option value="rt">Reaction times, ms</option>
+            <option value="mine">Your numbers (paste below)</option>
+          </select>
+
+          <label for="mine">Your numbers</label>
+          <textarea id="mine" placeholder="12.5 13.1 12.8 …&#10;Separate with spaces, new lines or semicolons. At least 5 values."></textarea>
+
+          <label for="k">Outlier threshold: <output id="kout">4</output> × MAD</label>
+          <input id="k" type="range" min="1" max="8" step="0.5" value="4">
+
+          <label class="chk"><input id="clean" type="checkbox"> Remove flagged readings</label>
+          <button class="btn small" id="again" type="button">New data</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="what">
+      <h2>What I do</h2>
+      <div class="what">
+        <div>
+          <h3>Cleaning and checking</h3>
+          <p>I load exports from devices, spreadsheets and databases, look for missing values, duplicates and impossible readings, and write down every rule I apply so you can disagree with it.</p>
+        </div>
+        <div>
+          <h3>Analysis</h3>
+          <p>Descriptive statistics, group comparisons, reliability checks and plots in Python with pandas. If your question needs a method I don’t use every day, I will tell you before we start.</p>
+        </div>
+        <div>
+          <h3>Dashboards and figures</h3>
+          <p>Interactive pages that open in any browser without installing anything, and static figures for papers and slides.</p>
+        </div>
+        <div>
+          <h3>Software for your study</h3>
+          <p>If the research needs its own program, such as an experiment or data-collection app, a processing pipeline or an internal tool, I can design and build it. We agree on scope and price first.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="process">
+      <h2>How a project works</h2>
+      <ol class="steps">
+        <li>You send the question and a sample of the data, or a description of it.</li>
+        <li>I reply with what I can answer and a fixed price for a small pilot.</li>
+        <li>I deliver the code, the cleaned data and a short write-up, so you can re-run everything yourself.</li>
+        <li>If it fits, we continue with the full data.</li>
+      </ol>
+      <p class="fine">Confidentiality and authorship are agreed in writing before I open your data.</p>
+    </section>
+
+    <section class="sec" id="about">
+      <h2>About</h2>
+      <p>I’m Alexey Terletskiy, a PhD student in systems analysis. I work with all kinds of tabular and time-series data: experiments, sensors, surveys, logs and instrument measurements. I build the tools around it too: data collection in Python, databases, dashboards and small research programs.</p>
+    </section>
+
+    <section class="sec" id="contact">
+      <h2>Contact</h2>
+      <p class="sub">Write with a short description of your data and what you want to learn from it.</p>
+      <a class="mail" href="mailto:alexterletskii@gmail.com">alexterletskii@gmail.com</a>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap"><p>© 2026 Alexey Terletskiy. Example data on this site are simulated.</p></div>
+</footer>
+
+<dialog id="viewer" aria-label="Dashboard">
+  <div class="vbar">
+    <strong id="vt"></strong>
+    <div class="vlinks">
+      <a id="vcode" href="#">Code</a>
+      <a id="vopen" href="#" target="_blank" rel="noopener">Open on its own page</a>
+      <button class="btn small" id="vclose" type="button">Close</button>
+    </div>
+  </div>
+  <iframe id="vframe" title="Dashboard" src="about:blank"></iframe>
+</dialog>
+
+<script>
+/* Dashboard viewer: the list items are normal links, so they work without JavaScript. */
+(function () {
+  const dlg = document.getElementById('viewer');
+  const frame = document.getElementById('vframe');
+  document.querySelectorAll('.toc a').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('vt').textContent = a.dataset.title;
+      document.getElementById('vopen').href = a.href;
+      document.getElementById('vcode').href = a.dataset.code;
+      frame.src = a.href;
+      dlg.showModal();
+    });
+  });
+  document.getElementById('vclose').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', function () { frame.src = 'about:blank'; });
+})();
+
+/* Cover: 90 simulated trajectories, one orange line for their mean */
+(function () {
+  const cv = document.getElementById('fibers');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const N = 90, STEPS = 120;
+  let w = 0, h = 0, t = 0, mx = 0.5, visible = true;
+
+  let s = 11;
+  const rnd = function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  const fibers = Array.from({ length: N }, function () {
+    return { y: rnd(), a: 0.05 + rnd() * 0.18, f: 1 + rnd() * 2.2, p: rnd() * 6.28, sp: 0.15 + rnd() * 0.35, hue: rnd() };
+  });
+
+  const spread = function (x) { return 0.55 - 0.45 * Math.exp(-Math.pow((x - 0.58) / 0.16, 2)); };
+  const center = function (x) { return 0.46 + 0.07 * Math.sin(x * 4.2 + t * 0.25 + mx * 2); };
+  const yAt = function (f, x) {
+    return center(x) + ((f.y - 0.5) * 0.9 + f.a * Math.sin(x * f.f * 7 + f.p + t * f.sp)) * spread(x);
+  };
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineWidth = 1;
+    fibers.forEach(function (f) {
+      ctx.beginPath();
+      for (let i = 0; i <= STEPS; i++) {
+        const x = i / STEPS;
+        if (i === 0) ctx.moveTo(0, yAt(f, 0) * h); else ctx.lineTo(x * w, yAt(f, x) * h);
+      }
+      ctx.strokeStyle = 'hsla(' + (225 + f.hue * 50) + ',90%,' + (58 + f.hue * 17) + '%,0.22)';
+      ctx.stroke();
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.beginPath();
+    for (let i = 0; i <= STEPS; i++) {
+      const x = i / STEPS;
+      if (i === 0) ctx.moveTo(0, center(0) * h); else ctx.lineTo(x * w, center(x) * h);
+    }
+    ctx.strokeStyle = '#e8903f'; ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#e8903f'; ctx.shadowBlur = 14;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const r = cv.getBoundingClientRect();
+    w = r.width; h = r.height;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  function loop() {
+    if (visible && !document.hidden) { t += 0.012; draw(); }
+    requestAnimationFrame(loop);
+  }
+
+  new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(cv);
+  document.querySelector('.cover').addEventListener('pointermove', function (e) { mx = e.clientX / window.innerWidth; });
+  window.addEventListener('resize', resize);
+  resize();
+  if (!reduce) requestAnimationFrame(loop);
+})();
+
+
+
+
+
+
+/* Outlier demo */
+/* Try it: mini dashboard */
+(function () {
+  const $ = function (id) { return document.getElementById(id); };
+  const svg = $('chart');
+  const W = 640, H = 300, M = { l: 48, r: 16, t: 18, b: 30 };
+  const state = { chart: 'line', src: 'hr', k: 4, clean: false, seed: 7, vals: [], meta: {} };
+
+  const rng = function (seed) {
+    let s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  };
+  const median = function (a) {
+    if (!a.length) return NaN;
+    const b = a.slice().sort(function (x, y) { return x - y; }), m = b.length >> 1;
+    return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2;
+  };
+  const mean = function (a) { return a.length ? a.reduce(function (p, c) { return p + c; }, 0) / a.length : NaN; };
+  const fmt = function (v) {
+    if (!isFinite(v)) return '–';
+    const a = Math.abs(v);
+    return a >= 100 ? v.toFixed(0) : a >= 10 ? v.toFixed(1) : v.toFixed(2);
+  };
+  const int = function (v) { return String(Math.round(v)); };
+  const lin = function (d0, d1, r0, r1) {
+    const span = (d1 - d0) || 1;
+    return function (v) { return r0 + (v - d0) / span * (r1 - r0); };
+  };
+  const minOf = function (a) { return Math.min.apply(null, a); };
+  const maxOf = function (a) { return Math.max.apply(null, a); };
+
+  /* Simulated datasets */
+  const N = 96;
+  function finish(d, r, fault) {
+    for (let j = 0; j < 4; j++) { const i = 3 + Math.floor(r() * (N - 6)); d[i] = fault(d[i], r); }
+    for (let j = 0; j < 2; j++) d[Math.floor(r() * N)] = null;
+    return d;
+  }
+  const GEN = {
+    hr: { title: 'Heart rate', unit: 'bpm', make: function (r) {
+      return finish(Array.from({ length: N }, function (_, i) { return 72 + 6 * Math.sin(i / 9) + (r() - 0.5) * 5; }), r,
+        function (v, q) { return v + (q() < 0.5 ? -1 : 1) * (28 + q() * 15); });
+    } },
+    pm: { title: 'PM2.5', unit: 'µg/m³', make: function (r) {
+      return finish(Array.from({ length: N }, function (_, i) {
+        const h = i % 24;
+        return 16 + 11 * Math.exp(-Math.pow(h - 8, 2) / 9) + 13 * Math.exp(-Math.pow(h - 18.5, 2) / 12) + r() * 5;
+      }), r, function (v, q) { return v + 50 + q() * 30; });
+    } },
+    rt: { title: 'Reaction times', unit: 'ms', make: function (r) {
+      return finish(Array.from({ length: N }, function () { return Math.exp(Math.log(420) + (r() + r() + r() - 1.5) * 0.5); }), r,
+        function (v, q) { return v * (2.8 + q()); });
+    } }
+  };
+
+  function parse(text) {
+    const out = [];
+    text.split(/[\s;]+/).filter(Boolean).forEach(function (tok) {
+      const parts = (tok.match(/,/g) || []).length > 1 ? tok.split(',') : [tok.replace(',', '.')];
+      parts.forEach(function (p) {
+        if (p === '') return;
+        const v = Number(p);
+        out.push(isFinite(v) && /\d/.test(p) ? v : null);
+      });
+    });
+    return out;
+  }
+
+  function load() {
+    if (state.src === 'mine') {
+      state.vals = parse($('mine').value);
+      state.meta = { title: 'Your numbers', unit: '' };
+    } else {
+      state.vals = GEN[state.src].make(rng(state.seed));
+      state.meta = GEN[state.src];
+    }
+  }
+
+  /* Drawing helpers */
+  function yAxis(sy, lo, hi, unit, f) {
+    f = f || fmt;
+    let o = '';
+    for (let t = 0; t < 4; t++) {
+      const v = lo + t * (hi - lo) / 3, y = sy(v);
+      o += '<line class="gl" x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '"/>' +
+           '<text class="tt" x="' + (M.l - 6) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">' + f(v) + '</text>';
+    }
+    return o + (unit ? '<text class="tt" x="' + M.l + '" y="10">' + unit + '</text>' : '');
+  }
+  function xCaption(label) {
+    return '<text class="tt" x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + label + '</text>';
+  }
+
+  /* Charts */
+  function chartLine(c) {
+    const n = c.vals.length, lo = minOf(c.nums), hi = maxOf(c.nums), pad = (hi - lo) * 0.06 || 1;
+    const sx = lin(0, n - 1, M.l, W - M.r), sy = lin(lo - pad, hi + pad, H - M.b, M.t);
+    let o = yAxis(sy, lo, hi, state.meta.unit), d = '', pen = false;
+    c.vals.forEach(function (v, i) {
+      if (!c.use[i]) { pen = false; return; }
+      d += (pen ? 'L' : 'M') + sx(i).toFixed(1) + ',' + sy(v).toFixed(1);
+      pen = true;
+    });
+    o += '<path class="ln" d="' + d + '"/>';
+    c.vals.forEach(function (v, i) {
+      if (c.bad[i]) o += '<circle class="ring" cx="' + sx(i).toFixed(1) + '" cy="' + sy(v).toFixed(1) +
+        '" r="6"><title>Reading ' + (i + 1) + ': ' + fmt(v) + '</title></circle>';
+    });
+    if (isFinite(c.mean)) {
+      const y = sy(c.mean).toFixed(1);
+      o += '<line class="mean" x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + y + '" y2="' + y + '"/>' +
+           '<text class="tt" x="' + (W - M.r) + '" y="' + (y - 5) + '" text-anchor="end">mean ' + fmt(c.mean) + '</text>';
+    }
+    return o + xCaption('reading number, 1 to ' + n);
+  }
+
+  function chartBars(c) {
+    const n = c.vals.length, B = 8, size = Math.ceil(n / B), bw = (W - M.l - M.r) / B, g = [];
+    for (let b = 0; b < B; b++) {
+      const part = [];
+      for (let i = b * size; i < Math.min(n, (b + 1) * size); i++) if (c.use[i]) part.push(c.vals[i]);
+      g.push(part.length ? mean(part) : null);
+    }
+    const ok = g.filter(function (x) { return x !== null; });
+    const lo = Math.min(0, minOf(ok)), hi = Math.max(0, maxOf(ok)) * 1.1 || 1;
+    const sy = lin(lo, hi, H - M.b, M.t), y0 = sy(0);
+    let o = yAxis(sy, lo, hi, state.meta.unit);
+    g.forEach(function (v, b) {
+      const x = M.l + b * bw + bw * 0.15, lab = (b * size + 1) + '–' + Math.min(n, (b + 1) * size);
+      if (v !== null) {
+        o += '<rect class="bar" x="' + x.toFixed(1) + '" y="' + Math.min(sy(v), y0).toFixed(1) +
+          '" width="' + (bw * 0.7).toFixed(1) + '" height="' + Math.abs(sy(v) - y0).toFixed(1) +
+          '"><title>Readings ' + lab + ': mean ' + fmt(v) + '</title></rect>';
+      }
+      o += '<text class="tt" x="' + (x + bw * 0.35).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + lab + '</text>';
+    });
+    return o;
+  }
+
+  function chartHist(c) {
+    const vals = c.vals.filter(function (v, i) { return c.use[i]; });
+    let lo = minOf(vals), hi = maxOf(vals);
+    if (hi === lo) hi = lo + 1;
+    const B = 12, step = (hi - lo) / B, cnt = new Array(B).fill(0), bw = (W - M.l - M.r) / B;
+    vals.forEach(function (v) { cnt[Math.min(B - 1, Math.floor((v - lo) / step))]++; });
+    const top = maxOf(cnt) || 1, sy = lin(0, top, H - M.b, M.t);
+    let o = yAxis(sy, 0, top, 'count', int);
+    cnt.forEach(function (k, b) {
+      const h = H - M.b - sy(k);
+      o += '<rect class="bar" x="' + (M.l + b * bw + 1).toFixed(1) + '" y="' + sy(k).toFixed(1) +
+        '" width="' + (bw - 2).toFixed(1) + '" height="' + h.toFixed(1) + '"><title>' +
+        fmt(lo + b * step) + ' to ' + fmt(lo + (b + 1) * step) + ': ' + k + ' readings</title></rect>';
+    });
+    return o +
+      '<text class="tt" x="' + M.l + '" y="' + (H - 12) + '">' + fmt(lo) + '</text>' +
+      '<text class="tt" x="' + (W - M.r) + '" y="' + (H - 12) + '" text-anchor="end">' + fmt(hi) + '</text>' +
+      xCaption('value' + (state.meta.unit ? ', ' + state.meta.unit : ''));
+  }
+
+  function chartScatter(c) {
+    const lo = minOf(c.nums), hi = maxOf(c.nums), pad = (hi - lo) * 0.06 || 1;
+    const sx = lin(lo - pad, hi + pad, M.l, W - M.r), sy = lin(lo - pad, hi + pad, H - M.b, M.t);
+    let o = yAxis(sy, lo, hi, state.meta.unit);
+    for (let t = 0; t < 4; t++) {
+      const v = lo + t * (hi - lo) / 3;
+      o += '<text class="tt" x="' + sx(v).toFixed(1) + '" y="' + (H - 16) + '" text-anchor="middle">' + fmt(v) + '</text>';
+    }
+    o += '<line class="gl" x1="' + sx(lo - pad).toFixed(1) + '" y1="' + sy(lo - pad).toFixed(1) +
+         '" x2="' + sx(hi + pad).toFixed(1) + '" y2="' + sy(hi + pad).toFixed(1) + '" stroke-dasharray="4 4"/>';
+    for (let i = 1; i < c.vals.length; i++) {
+      const a = c.vals[i - 1], b = c.vals[i];
+      if (a === null || b === null) continue;
+      const flagged = c.bad[i - 1] || c.bad[i];
+      if (state.clean && flagged) continue;
+      o += '<circle class="dot' + (flagged ? ' o' : '') + '" cx="' + sx(a).toFixed(1) + '" cy="' + sy(b).toFixed(1) +
+        '" r="3.5"><title>Reading ' + (i + 1) + ': ' + fmt(b) + ' after ' + fmt(a) + '</title></circle>';
+    }
+    return o + xCaption('previous reading');
+  }
+
+  function chartShare(c) {
+    const tot = c.vals.length, miss = tot - c.nums.length, flag = c.bad.filter(Boolean).length, norm = c.nums.length - flag;
+    const segs = [['Normal', norm, 'var(--glow)'], ['Flagged', flag, 'var(--orange)'], ['Missing', miss, '#4a5a73']];
+    const cx = 190, cy = H / 2, r = 85, C = 2 * Math.PI * r;
+    let off = 0, o = '';
+    segs.forEach(function (s) {
+      const len = s[1] / tot * C;
+      if (len > 0) {
+        o += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke-width="28" style="stroke:' + s[2] +
+          '" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) +
+          '" transform="rotate(-90 ' + cx + ' ' + cy + ')"><title>' + s[0] + ': ' + s[1] + '</title></circle>';
+      }
+      off += len;
+    });
+    o += '<text class="big" x="' + cx + '" y="' + (cy + 8) + '" text-anchor="middle">' + Math.round(norm / tot * 100) + '%</text>' +
+         '<text class="tt" x="' + cx + '" y="' + (cy + 28) + '" text-anchor="middle">normal</text>';
+    segs.forEach(function (s, i) {
+      const y = 110 + i * 38;
+      o += '<rect x="340" y="' + (y - 11) + '" width="14" height="14" style="fill:' + s[2] + '"/>' +
+           '<text class="leg" x="364" y="' + y + '">' + s[0] + '</text>' +
+           '<text class="leg" x="520" y="' + y + '" text-anchor="end">' + s[1] + '</text>';
+    });
+    return o;
+  }
+
+  const CHARTS = { line: chartLine, bars: chartBars, hist: chartHist, scatter: chartScatter, share: chartShare };
+  const INFO = {
+    line: ['Signal over time', 'Orange rings mark readings farther than the threshold from the median. The dashed line is the mean of the readings that are kept.'],
+    bars: ['Mean of each block of readings', 'The readings are split into 8 consecutive blocks. Each bar is the mean of its kept readings.'],
+    hist: ['Distribution of kept readings', 'How many readings fall into each of 12 equal-width bins.'],
+    scatter: ['Each reading against the one before it', 'Points near the diagonal mean the signal changes slowly. Orange points involve a flagged reading.'],
+    share: ['Normal, flagged and missing readings', 'Missing readings are empty or non-numeric entries in the data.']
+  };
+
+  function render() {
+    const v = state.vals, nums = v.filter(function (x) { return x !== null; });
+    const set = function (id, t) { $(id).textContent = t; };
+    if (nums.length < 5) {
+      svg.innerHTML = '<text class="msg" x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle">Paste at least 5 numbers</text>';
+      ['k-n', 'k-mean', 'k-med', 'k-bad'].forEach(function (id) { set(id, '–'); });
+      set('dtitle', ''); set('dnote', '');
+      return;
+    }
+    const med = median(nums);
+    const mad = 1.4826 * median(nums.map(function (x) { return Math.abs(x - med); })) || 1e-9;
+    const bad = v.map(function (x) { return x !== null && Math.abs(x - med) > state.k * mad; });
+    const use = v.map(function (x, i) { return x !== null && !(state.clean && bad[i]); });
+    const kept = v.filter(function (x, i) { return use[i]; });
+    const c = { vals: v, nums: nums, bad: bad, use: use, mean: mean(kept), median: median(kept) };
+    const flag = bad.filter(Boolean).length, unit = state.meta.unit ? ' ' + state.meta.unit : '';
+
+    set('k-n', String(nums.length));
+    set('k-mean', fmt(c.mean));
+    set('k-med', fmt(c.median));
+    set('k-bad', flag + ' (' + Math.round(flag / nums.length * 100) + '%)');
+    set('dtitle', INFO[state.chart][0] + ' · ' + state.meta.title + (unit ? ',' + unit : ''));
+    set('dnote', INFO[state.chart][1]);
+    svg.innerHTML = CHARTS[state.chart](c);
+  }
+
+  /* Controls */
+  const tabs = document.querySelectorAll('#dash [data-chart]');
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.chart = b.dataset.chart;
+      tabs.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      render();
+    });
+  });
+  $('ds').addEventListener('change', function () { state.src = this.value; load(); render(); });
+  $('mine').addEventListener('input', function () {
+    const n = parse(this.value).filter(function (x) { return x !== null; }).length;
+    if (n >= 5) { state.src = 'mine'; $('ds').value = 'mine'; }
+    load(); render();
+  });
+  $('k').addEventListener('input', function () { state.k = +this.value; $('kout').textContent = this.value; render(); });
+  $('clean').addEventListener('change', function () { state.clean = this.checked; render(); });
+  $('again').addEventListener('click', function () { state.seed = Math.floor(Math.random() * 1e9); load(); render(); });
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
