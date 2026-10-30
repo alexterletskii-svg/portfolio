@@ -128,6 +128,15 @@
       </div>
     </section>
 
+        <section class="sec" id="clean">
+      <h2>Before and after cleaning</h2>
+      <p class="sub">Drag the handle across the chart. On the left is a raw recording from a simulated sensor, on the right the same recording after cleaning. The rules are written under the chart, so you can disagree with them.</p>
+      <figure class="ba">
+        <svg id="ba" viewBox="0 0 640 300" role="img" aria-label="Sensor recording: raw on the left of the handle, cleaned on the right"></svg>
+        <input id="ba-range" type="range" min="0" max="100" step="1" value="50" aria-label="Move the divider between raw and cleaned data">
+        <figcaption id="ba-note"></figcaption>
+      </figure>
+    </section>
     <section class="sec" id="what">
       <h2>What I do</h2>
       <div class="what">
@@ -290,6 +299,125 @@
   window.addEventListener('resize', resize);
   resize();
   if (!reduce) requestAnimationFrame(loop);
+})();
+
+/* Before / after cleaning */
+(function () {
+  const svg = document.getElementById('ba');
+  const range = document.getElementById('ba-range');
+  if (!svg || !range) return;
+
+  const W = 640, H = 300, M = { l: 48, r: 16, t: 36, b: 30 };
+  const N = 2000, MED = 15, AVG = 41;
+
+  const rng = function (seed) {
+    let s = seed >>> 0;
+    return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+  };
+  const median = function (a) {
+    const b = a.slice().sort(function (x, y) { return x - y; }), m = b.length >> 1;
+    return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2;
+  };
+  const movMedian = function (a, w) {
+    const h = w >> 1;
+    return a.map(function (_, i) { return median(a.slice(Math.max(0, i - h), Math.min(a.length, i + h + 1))); });
+  };
+  const movMean = function (a, w) {
+    const h = w >> 1;
+    return a.map(function (_, i) {
+      const lo = Math.max(0, i - h), hi = Math.min(a.length, i + h + 1);
+      let s = 0;
+      for (let j = lo; j < hi; j++) s += a[j];
+      return s / (hi - lo);
+    });
+  };
+
+  /* Simulated recording: two slow oscillations buried in noise that is stronger in the middle */
+  const r = rng(5);
+  const g = function () { return (r() + r() + r() + r() + r() + r() - 3) * 1.414; };   /* roughly N(0, 1) */
+  const raw = Array.from({ length: N }, function (_, i) {
+    const x = i / N;
+    const sig = 1.3 * Math.sin(2 * Math.PI * 2.3 * x) + 0.6 * Math.sin(2 * Math.PI * 6 * x + 1);
+    const amp = 1.4 * (1 + 0.9 * Math.exp(-Math.pow((x - 0.47) / 0.13, 2)) + 0.25 * Math.exp(-Math.pow((x - 0.20) / 0.05, 2)));
+    return sig + amp * g();
+  });
+
+  /* Cleaning: a moving median removes spikes, a moving average removes the remaining fast noise */
+  const clean = movMean(movMedian(raw, MED), AVG);
+
+  /* Symmetric scale, shared by both sides */
+  const peak = Math.max.apply(null, raw.map(function (v) { return Math.abs(v); }));
+  const lim = Math.ceil(peak / 2) * 2;
+  const sx = function (i) { return M.l + i / (N - 1) * (W - M.l - M.r); };
+  const sy = function (v) { return M.t + (lim - v) / (2 * lim) * (H - M.b - M.t); };
+  const f1 = function (v) { return v.toFixed(1); };
+  const path = function (a) {
+    let d = '';
+    a.forEach(function (v, i) { d += (i ? 'L' : 'M') + f1(sx(i)) + ',' + f1(sy(v)); });
+    return d;
+  };
+
+  /* Static drawing */
+  let grid = '';
+  [-lim, -lim / 2, 0, lim / 2, lim].forEach(function (v) {
+    const y = sy(v);
+    grid += '<line class="gl" x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + f1(y) + '" y2="' + f1(y) + '"/>' +
+            '<text class="tt" x="' + (M.l - 6) + '" y="' + f1(y + 4) + '" text-anchor="end">' + v + '</text>';
+  });
+  grid += '<text class="tt" x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">sample number, 1 to ' + N + ' · amplitude, arbitrary units</text>';
+
+  const rawLayer = '<path class="raw" style="stroke-width:.9" d="' + path(raw) + '"/>' +
+                   '<text class="lab" x="' + (M.l + 6) + '" y="22">RAW RECORDING</text>';
+  const clnLayer = '<path class="cln" d="' + path(clean) + '"/>' +
+                   '<text class="lab" x="' + (W - M.r) + '" y="22" text-anchor="end">CLEANED</text>';
+
+  const cy = (M.t + H - M.b) / 2;
+  svg.innerHTML =
+    '<defs><clipPath id="ba-cr"><rect id="ba-rr" x="0" y="0" width="0" height="' + H + '"/></clipPath>' +
+    '<clipPath id="ba-cc"><rect id="ba-rc" x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>' +
+    grid +
+    '<g clip-path="url(#ba-cc)">' + clnLayer + '</g>' +
+    '<g clip-path="url(#ba-cr)">' + rawLayer + '</g>' +
+    '<g id="ba-h"><line class="hl" x1="0" x2="0" y1="0" y2="' + (H - M.b) + '"/>' +
+    '<circle class="knob" cx="0" cy="' + cy + '" r="16"/>' +
+    '<path class="arr" d="M-4,' + (cy - 5) + ' L-9,' + cy + ' L-4,' + (cy + 5) + ' M4,' + (cy - 5) + ' L9,' + cy + ' L4,' + (cy + 5) + '"/></g>';
+
+  document.getElementById('ba-note').textContent =
+    'Raw recording: ' + N + ' samples, noise strongest in the middle of the record. ' +
+    'Rules: a ' + MED + '-sample moving median removes spikes, then a ' + AVG + '-sample moving average removes the remaining fast noise. ' +
+    'Cleaned: the slow oscillation hidden in the noise becomes visible. ' +
+    'Averaging also smooths real fast changes, so the window is chosen to fit the signal.';
+
+  /* Divider */
+  const rr = document.getElementById('ba-rr'), rc = document.getElementById('ba-rc'), hg = document.getElementById('ba-h');
+  function set(p) {
+    p = Math.max(0, Math.min(100, p));
+    const x = M.l + p / 100 * (W - M.l - M.r);
+    rr.setAttribute('width', f1(x));
+    rc.setAttribute('x', f1(x)); rc.setAttribute('width', f1(W - x));
+    hg.setAttribute('transform', 'translate(' + f1(x) + ' 0)');
+    range.value = p;
+  }
+  function fromEvent(e) {
+    const b = svg.getBoundingClientRect();
+    set(((e.clientX - b.left) / b.width * W - M.l) / (W - M.l - M.r) * 100);
+  }
+
+  /* Drag on the chart. Vertical swipes still scroll the page (touch-action: pan-y in CSS). */
+  let down = null;
+  svg.addEventListener('pointerdown', function (e) { down = { x: e.clientX, moved: false }; svg.setPointerCapture(e.pointerId); });
+  svg.addEventListener('pointermove', function (e) {
+    if (!down) return;
+    if (Math.abs(e.clientX - down.x) > 3) down.moved = true;
+    if (down.moved) fromEvent(e);
+  });
+  svg.addEventListener('pointerup', function (e) { if (down && !down.moved) fromEvent(e); down = null; });
+  svg.addEventListener('pointercancel', function () { down = null; });
+
+  /* Keyboard and screen readers use the range input */
+  range.addEventListener('input', function () { set(+range.value); });
+
+  set(50);
 })();
 
 /* Try it: mini dashboard */

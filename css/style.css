@@ -150,6 +150,26 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+/* Before / after cleaning */
+.ba{margin:0;display:none}
+.js .ba{display:block}                 /* without JS the empty chart stays hidden */
+.ba svg{display:block;width:100%;height:auto;border:1px solid var(--line);background:#0b1220;
+  touch-action:pan-y;cursor:ew-resize;-webkit-user-select:none;user-select:none}
+.ba input[type=range]{margin:.75rem 0 0}
+.ba figcaption{color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:42rem}
+
+#ba .gl{stroke:var(--line);stroke-width:1}
+#ba .tt{fill:var(--muted);font-size:11px;font-family:var(--sans)}
+#ba .lab{fill:var(--ink);font:700 15px var(--cond);letter-spacing:.08em}
+#ba .raw{fill:none;stroke:var(--muted);stroke-width:1.75;stroke-linejoin:round}
+#ba .cln{fill:none;stroke:var(--glow);stroke-width:2.25;stroke-linejoin:round}
+#ba .flag{fill:var(--orange)}
+#ba .band{fill:rgba(232,144,63,.14)}
+#ba .fill{fill:none;stroke:var(--glow);stroke-width:2;stroke-dasharray:4 4;opacity:.85}
+#ba .hl{stroke:var(--orange);stroke-width:2}
+#ba .knob{fill:var(--bg);stroke:var(--orange);stroke-width:2}
+#ba .arr{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 /* What I do */
 .what{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2rem}
 @media (max-width:64rem){.what{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -234,6 +254,10 @@ body:has(dialog[open]){overflow:hidden}
   #chart .tt{font-size:16px}          /* компенсирует сжатие SVG примерно до 0.5 */
   #chart .leg,#chart .msg{font-size:22px}
   #chart .big{font-size:48px}
+
+  /* Before / after */
+  #ba .tt{font-size:16px}
+  #ba .lab{font-size:24px}
 
   /* Dashboard viewer fullscreen */
   dialog{width:100vw;height:100vh;height:100dvh;border:0;border-radius:0}
