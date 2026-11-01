@@ -186,6 +186,14 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 @media (max-width:36rem){.steps{grid-template-columns:1fr}}
 .fine{color:var(--muted);margin-top:1.5rem}
 
+/* Publications */
+.pubs h3{font:700 1.5rem/1.15 var(--cond);margin:2rem 0 .75rem}
+.pubs h3:first-child{margin-top:0}
+.pubs ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.pubs li{padding:.9rem 0;border-bottom:1px solid var(--line);color:var(--muted);max-width:52rem}
+.pubs li b{color:var(--ink);font-weight:700}
+.pubs li span{display:block;font-size:.9rem;margin-top:.15rem}
+
 #about p{max-width:42rem;font-size:1.15rem}
 .mail{display:inline-block;font:700 clamp(1.8rem,5vw,3.5rem)/1.1 var(--cond);color:var(--ink);
   text-decoration:none;border-bottom:2px solid var(--orange);transition:color .2s;overflow-wrap:anywhere}
