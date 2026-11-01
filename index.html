@@ -6,7 +6,11 @@
 <title>Alexey Terletskiy, data analysis and dashboards</title>
 <meta name="description" content="Independent data analyst. Data cleaning, documented analysis in Python, dashboards, and custom software for research.">
 <meta name="color-scheme" content="dark">
-<link rel="icon" href="data:,">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Alexey Terletskiy, data analysis and dashboards">
+<meta property="og:description" content="Data cleaning, documented analysis in Python and dashboards for research. Worked examples on real and simulated data.">
+<meta property="og:url" content="https://alexterletskii-svg.github.io/portfolio/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070b14'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23e8903f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
@@ -38,7 +42,7 @@
     <canvas id="fibers" aria-hidden="true"></canvas>
     <div class="wrap">
       <div class="teasers">
-        <a href="#what"><b>Cleaning</b><span>Every rule written down</span></a>
+        <a href="#cleaning"><b>Cleaning</b><span>Every rule written down</span></a>
         <a href="#examples"><b>Dashboards</b><span>Open in any browser</span></a>
         <a href="#what"><b>Software</b><span>Built around your study</span></a>
       </div>
@@ -58,7 +62,7 @@
   <div class="wrap">
     <section class="sec" id="examples">
       <h2>Examples</h2>
-      <p class="sub">Four worked examples on simulated data. Open one to explore the dashboard. Each comes with the Python code that produced it.</p>
+      <p class="sub">Five worked examples: four on simulated data and one on real open data. Open one to explore the dashboard. Each comes with the Python code that produced it.</p>
       <ol class="toc">
         <li><a href="dashboards/dashboard_stress.html" data-title="Stress response in wearable data" data-code="scripts/gen_stress.py">
           <span class="no">01</span>
@@ -80,8 +84,7 @@
           <span><span class="ttl">Survey data: careless answers, reverse scoring, reliability</span>
             <span class="dsc">A questionnaire with negatively worded items. Removes straight-lining, reverse-scores, checks reliability with Cronbach's alpha and compares two groups.</span></span>
           <span class="how">Open dashboard</span></a></li>
-
-                <li><a href="dashboards/dashboard_air-quality-real.html" data-title="Air quality on real data: three citizen-science sensors" data-code="scripts/gen_air_quality_real.py">
+        <li><a href="dashboards/dashboard_air-quality-real.html" data-title="Air quality on real data: three citizen-science sensors" data-code="scripts/gen_air_quality_real.py">
           <span class="no">05</span>
           <span><span class="ttl">Air quality on real data: three citizen-science sensors</span>
             <span class="dsc">Hourly PM2.5 from the Sensor.Community network (2016, CC BY 4.0). Real gaps, impossible values and flat-lined sensors, found and removed by written rules.</span></span>
@@ -134,7 +137,7 @@
       </div>
     </section>
 
-        <section class="sec" id="clean">
+    <section class="sec" id="cleaning">
       <h2>Before and after cleaning</h2>
       <p class="sub">Drag the handle across the chart. On the left is a raw recording from a simulated sensor, on the right the same recording after cleaning. The rules are written under the chart, so you can disagree with them.</p>
       <figure class="ba">
@@ -143,6 +146,7 @@
         <figcaption id="ba-note"></figcaption>
       </figure>
     </section>
+
     <section class="sec" id="what">
       <h2>What I do</h2>
       <div class="what">
@@ -169,7 +173,7 @@
       <h2>How a project works</h2>
       <ol class="steps">
         <li>You send the question and a sample of the data, or a description of it.</li>
-        <li>I reply with what I can answer and a fixed price for a small pilot.</li>
+        <li>I reply with what I can answer, how I would approach it, and a price for a small pilot, agreed before I start.</li>
         <li>I deliver the code, the cleaned data and a short write-up, so you can re-run everything yourself.</li>
         <li>If it fits, we continue with the full data.</li>
       </ol>
@@ -185,12 +189,13 @@
       <h2>Contact</h2>
       <p class="sub">Write with a short description of your data and what you want to learn from it.</p>
       <a class="mail" href="mailto:alexterletskii@gmail.com">alexterletskii@gmail.com</a>
+      <p class="fine"><a href="https://t.me/Aleksey_Terletskiy">Telegram</a></p>
     </section>
   </div>
 </main>
 
 <footer>
-  <div class="wrap"><p>© 2026 Alexey Terletskiy. Example data on this site are simulated.</p></div>
+  <div class="wrap"><p>© 2026 Alexey Terletskiy. Examples 01–04 use simulated data. Example 05 uses open data from Sensor.Community (CC BY 4.0).</p></div>
 </footer>
 
 <dialog id="viewer" aria-label="Dashboard">
